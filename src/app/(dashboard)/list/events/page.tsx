@@ -61,7 +61,7 @@ const EventsListPage = async ({
       <td className="flex items-center gap-4 p-4 font-semibold">
         {item.title}
       </td>
-      <td className="">{item.class.name}</td>
+      <td className="">{item.class?.name || "-"}</td>
       <td className="hidden md:table-cell">
         {new Intl.DateTimeFormat("en-US").format(item.startTime || "")}
       </td>
@@ -107,7 +107,7 @@ const EventsListPage = async ({
     }
   }
 
-  //Role Conditions
+  // Role Conditions
   const roleConditions = {
     teacher: { lessons: { some: { teacherId: currentUserId! } } },
     student: { students: { some: { id: currentUserId! } } },

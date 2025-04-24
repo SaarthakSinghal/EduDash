@@ -26,6 +26,7 @@ const ExamsListPage = async ({
 
   const query: Prisma.ExamWhereInput = {};
   const role = (await getUtils()).role;
+  const currentUserId = (await getUtils()).userId;
 
   const columns = [
     {
@@ -66,7 +67,7 @@ const ExamsListPage = async ({
       <td className="hidden md:table-cell">{new Intl.DateTimeFormat("en-US").format(item.startTime || "")}</td>
       <td>
         <div className="flex items-center gap-2">
-          {role === "admin" && (
+          {(role === "admin" || role === "teacher") && (
             <>
               <FormModal table="exam" type="update" data={item} />
               <FormModal table="exam" type="delete" id={item.id} />
@@ -77,16 +78,19 @@ const ExamsListPage = async ({
     </tr>
   );
 
+  const roleConditions = {
+    admin: {},
+    teacher: { teacherId: currentUserId! },
+    student: { class: { students: { some: { id: currentUserId! } } } },
+    parent: { class: { students: { some: { parentId: currentUserId! } } } },
+  };
+
+  query.lesson = roleConditions[role as keyof typeof roleConditions] || {};
+  
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
       if (value !== undefined) {
         switch (key) {
-          case "classId": // student's exams
-            query.lesson = { classId: parseInt(value) };
-            break;
-          case "teacherId": // teacher's exams
-            query.lesson = { teacherId: value };
-            break;
           case "search":
             query.lesson = {
               subject: {
@@ -100,7 +104,7 @@ const ExamsListPage = async ({
       }
     }
   }
-
+  
   const [data, count] = await prisma.$transaction([
     prisma.exam.findMany({
       where: query,
@@ -136,7 +140,9 @@ const ExamsListPage = async ({
             <button className="flex h-8 w-8 items-center justify-center rounded-full bg-lamaYellow">
               <Image src="/sort.png" alt="/" width={14} height={14} />
             </button>
-            <FormModal table="exam" type="create" />
+            {(role === "admin" || role === "teacher") && (
+              <FormModal table="exam" type="create" />
+            )}
           </div>
         </div>
       </div>

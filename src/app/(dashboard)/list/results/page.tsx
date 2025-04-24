@@ -1,12 +1,12 @@
-import { Prisma} from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import Image from "next/image";
 import FormModal from "src/components/FormModal";
 import Pagination from "src/components/Pagination";
 import ReusableTable from "src/components/ReusableTable";
 import TableSearch from "src/components/TableSearch";
-import { role } from "src/lib/data";
 import { prisma } from "src/lib/prisma";
 import { ITEM_PER_PAGE } from "src/lib/settings";
+import { getUtils } from "src/lib/utils";
 
 // Creating youi own type using the method we've been using till now would be tedious, so create your own type.
 // type ResultList = Result & {
@@ -24,66 +24,6 @@ type ResultList = {
   startTime: Date;
 };
 
-const columns = [
-  {
-    header: "Title",
-    accessor: "title",
-  },
-  {
-    header: "Student",
-    accessor: "student",
-  },
-  {
-    header: "Score",
-    accessor: "score",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Teacher",
-    accessor: "teacher",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Class",
-    accessor: "class",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Date",
-    accessor: "date",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Actions",
-    accessor: "action",
-  },
-];
-const renderRow = (item: ResultList) => (
-  <tr
-    key={item.id}
-    className="border-b border-gray-200 text-sm even:bg-slate-50 hover:bg-lamaPurpleLight"
-  >
-    <td className="flex items-center gap-4 p-4 font-semibold">{item.title}</td>
-    <td className="">{item.studentName + " " + item.studentSurname}</td>
-    <td className="hidden md:table-cell">{item.score}</td>
-    <td className="hidden md:table-cell">{item.teacherName}</td>
-    <td className="hidden md:table-cell">{item.className}</td>
-    <td className="hidden md:table-cell">
-      {new Intl.DateTimeFormat("en-US").format(item.startTime || "")}
-    </td>
-    <td>
-      <div className="flex items-center gap-2">
-        {role === "admin" && (
-          <>
-            <FormModal table="result" type="update" data={item} />
-            <FormModal table="result" type="delete" id={item.id} />
-          </>
-        )}
-      </div>
-    </td>
-  </tr>
-);
-
 const ResultsListPage = async ({
   searchParams,
 }: {
@@ -93,20 +33,114 @@ const ResultsListPage = async ({
   const currentPage = parseInt(page);
 
   const query: Prisma.ResultWhereInput = {};
+  const role = (await getUtils()).role;
+  const currentUserId = (await getUtils()).userId;
+
+  const columns = [
+    {
+      header: "Title",
+      accessor: "title",
+    },
+    {
+      header: "Student",
+      accessor: "student",
+    },
+    {
+      header: "Score",
+      accessor: "score",
+      className: "hidden md:table-cell",
+    },
+    {
+      header: "Teacher",
+      accessor: "teacher",
+      className: "hidden md:table-cell",
+    },
+    {
+      header: "Class",
+      accessor: "class",
+      className: "hidden md:table-cell",
+    },
+    {
+      header: "Date",
+      accessor: "date",
+      className: "hidden md:table-cell",
+    },
+    {
+      header: "Actions",
+      accessor: "action",
+      className: `${role === "admin" || role === "teacher" ? "" : "hidden"}`,
+    },
+  ];
+  const renderRow = (item: ResultList) => (
+    <tr
+      key={item.id}
+      className="border-b border-gray-200 text-sm even:bg-slate-50 hover:bg-lamaPurpleLight"
+    >
+      <td className="flex items-center gap-4 p-4 font-semibold">
+        {item.title}
+      </td>
+      <td className="">{item.studentName + " " + item.studentSurname}</td>
+      <td className="hidden md:table-cell">{item.score}</td>
+      <td className="hidden md:table-cell">{item.teacherName}</td>
+      <td className="hidden md:table-cell">{item.className}</td>
+      <td className="hidden md:table-cell">
+        {new Intl.DateTimeFormat("en-US").format(item.startTime || "")}
+      </td>
+      <td>
+        <div className="flex items-center gap-2">
+          {(role === "admin" || role === "teacher") && (
+            <>
+              <FormModal table="result" type="update" data={item} />
+              <FormModal table="result" type="delete" id={item.id} />
+            </>
+          )}
+        </div>
+      </td>
+    </tr>
+  );
+
+  //Role conditions
+  switch (role) {
+    case "admin":
+      break;
+    // For the "teacher" role, show results where the current user is the teacher of either the exam's lesson or the assignment's lesson.
+    case "teacher":
+      query.OR = [
+        { exam: { lesson: { teacherId: currentUserId! } } },
+        { assignment: { lesson: { teacherId: currentUserId! } } },
+      ];
+      break;
+    case "student":
+      query.studentId = currentUserId!;
+      break;
+    /*
+      If you wrote:
+      parent: { student: { some: { parentId: currentUserId! } } }
+      it would be invalid, because student is not an array on Result —it’s a single object.
+    */
+    case "parent":
+      query.student = {
+        parentId: currentUserId!,
+      };
+      break;
+    default:
+      break;
+  };
 
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
       if (value !== undefined) {
         switch (key) {
-          case "studentId": // student's exams
-            query.studentId = value;
-            break;
           case "search":
             query.OR = [
-                { exam: { title: { contains: value, mode: "insensitive" } } },
-                { assignment: { title: { contains: value, mode: "insensitive" } } },
-                { student: { name: { contains: value, mode: "insensitive" } } },
-                { student: { surname: { contains: value, mode: "insensitive" } } },
+              { exam: { title: { contains: value, mode: "insensitive" } } },
+              {
+                assignment: { title: { contains: value, mode: "insensitive" } },
+              },
+              { student: { name: { contains: value, mode: "insensitive" } } },
+              {
+                student: { surname: { contains: value, mode: "insensitive" } },
+              },
             ];
             break;
           default:
@@ -116,7 +150,7 @@ const ResultsListPage = async ({
     }
   }
 
- //Explanation for two include queries and watch results part again
+  //Explanation for two include queries and watch results part again
   /*
   Since there are 2 types of results, exams and assignments, we need to include them seperately in the include query
 
@@ -206,7 +240,9 @@ const ResultsListPage = async ({
             <button className="flex h-8 w-8 items-center justify-center rounded-full bg-lamaYellow">
               <Image src="/sort.png" alt="/" width={14} height={14} />
             </button>
-            <FormModal table="result" type="create" />
+            {(role === "admin" || role === "teacher") && (
+              <FormModal table="result" type="create" />
+            )}
           </div>
         </div>
       </div>
