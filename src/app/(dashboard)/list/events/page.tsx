@@ -8,8 +8,7 @@ import { prisma } from "src/lib/prisma";
 import { ITEM_PER_PAGE } from "src/lib/settings";
 import { getUtils } from "src/lib/utils";
 
-type EventList = Event & { class: Class; }
-
+type EventList = Event & { class: Class };
 
 const EventsListPage = async ({
   searchParams,
@@ -21,6 +20,7 @@ const EventsListPage = async ({
 
   const query: Prisma.EventWhereInput = {};
   const role = (await getUtils()).role;
+  const currentUserId = (await getUtils()).userId;
 
   const columns = [
     {
@@ -49,7 +49,7 @@ const EventsListPage = async ({
     {
       header: "Actions",
       accessor: "action",
-      className: `${role === "admin" ? "" : "hidden"}`
+      className: `${role === "admin" ? "" : "hidden"}`,
     },
   ];
 
@@ -62,17 +62,23 @@ const EventsListPage = async ({
         {item.title}
       </td>
       <td className="">{item.class.name}</td>
-      <td className="hidden md:table-cell">{new Intl.DateTimeFormat("en-US").format(item.startTime || "")}</td>
-      <td className="hidden md:table-cell">{item.startTime.toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      })}</td>
-      <td className="hidden md:table-cell">{item.endTime.toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      })}</td>
+      <td className="hidden md:table-cell">
+        {new Intl.DateTimeFormat("en-US").format(item.startTime || "")}
+      </td>
+      <td className="hidden md:table-cell">
+        {item.startTime.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        })}
+      </td>
+      <td className="hidden md:table-cell">
+        {item.endTime.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        })}
+      </td>
       <td>
         <div className="flex items-center gap-2">
           {role === "admin" && (
@@ -85,6 +91,8 @@ const EventsListPage = async ({
       </td>
     </tr>
   );
+
+  //URL Params Conditions
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
       if (value !== undefined) {
@@ -98,6 +106,20 @@ const EventsListPage = async ({
       }
     }
   }
+
+  //Role Conditions
+  const roleConditions = {
+    teacher: { lessons: { some: { teacherId: currentUserId! } } },
+    student: { students: { some: { id: currentUserId! } } },
+    parent: { students: { some: { parentId: currentUserId! } } },
+  };
+
+  query.OR = [
+    { classId: null },
+    {
+      class: roleConditions[role as keyof typeof roleConditions] || {},
+    },
+  ];
 
   const [data, count] = await prisma.$transaction([
     prisma.event.findMany({
@@ -113,7 +135,6 @@ const EventsListPage = async ({
       where: query,
     }),
   ]);
-
 
   return (
     <div className="m-4 mt-0 flex-1 rounded-lg bg-white p-4">
@@ -134,11 +155,7 @@ const EventsListPage = async ({
         </div>
       </div>
       {/* LIST */}
-      <ReusableTable
-        columns={columns}
-        renderRow={renderRow}
-        data={data}
-      />
+      <ReusableTable columns={columns} renderRow={renderRow} data={data} />
       {/* PAGINATION */}
       <Pagination page={currentPage} count={count} />
     </div>

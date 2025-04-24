@@ -4,7 +4,6 @@ import FormModal from "src/components/FormModal";
 import Pagination from "src/components/Pagination";
 import ReusableTable from "src/components/ReusableTable";
 import TableSearch from "src/components/TableSearch";
-import { role } from "src/lib/data";
 import { prisma } from "src/lib/prisma";
 import { ITEM_PER_PAGE } from "src/lib/settings";
 import { getUtils } from "src/lib/utils";

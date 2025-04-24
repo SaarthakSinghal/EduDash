@@ -47,6 +47,7 @@ const ClassesListPage = async ({
     {
       header: "Actions",
       accessor: "action",
+      className: `${role === "admin" ? "" : "hidden"}`,
     },
   ];
 

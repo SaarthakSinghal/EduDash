@@ -1,4 +1,5 @@
 import { Assignment, Class, Prisma, Subject, Teacher } from "@prisma/client";
+import { log } from "console";
 import Image from "next/image";
 import FormModal from "src/components/FormModal";
 import Pagination from "src/components/Pagination";
@@ -105,12 +106,13 @@ const AssignmentsListPage = async ({
         //   default:
         //     break;
         switch (key) {
-          case "classId": // student's exams
-            query.lesson.classId = parseInt(value);
-            break;
-          case "teacherId": // teacher's exams
-            query.lesson.teacherId = value ;
-            break;
+          // Shifted to Role condtions to access assignments based on the userID
+          // case "classId": // student's exams
+          //   query.lesson.classId = parseInt(value);
+          //   break;
+          // case "teacherId": // teacher's exams
+          //   query.lesson.teacherId = value ;
+          //   break;
           case "search":
             query.lesson.subject = {
                 name: { contains: value, mode: "insensitive" },
@@ -124,16 +126,21 @@ const AssignmentsListPage = async ({
   };
 
   // ROLE CONDITION
+  // we are using ! because we can only show the assignments once the teacher is logged in, then we'll get the currentUserId and then we can show the assignments
   switch(role) {
     case "admin":
       break;
-    // we are using ! because we can only show the assignments once the teacher is logged in, then we'll get the currentUserId and then we can show the assignments
     case "teacher":
       query.lesson.teacherId = currentUserId!;
       break;
     case "student":
       query.lesson.class = {
         students : { some : { id: currentUserId! } }
+      };
+      break;
+    case "parent":
+      query.lesson.class = {
+        students : { some : { parentId: currentUserId! } }
       };
       break;
     default:
