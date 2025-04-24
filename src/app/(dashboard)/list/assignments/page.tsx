@@ -184,7 +184,7 @@ const AssignmentsListPage = async ({
             <button className="flex h-8 w-8 items-center justify-center rounded-full bg-lamaYellow">
               <Image src="/sort.png" alt="/" width={14} height={14} />
             </button>
-            <FormModal table="assignment" type="create" />
+            {( role === "admin" || role === "teacher" ) ? <FormModal table="assignment" type="create" /> : "" }
           </div>
         </div>
       </div>

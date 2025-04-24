@@ -4,46 +4,11 @@ import FormModal from "src/components/FormModal";
 import Pagination from "src/components/Pagination";
 import ReusableTable from "src/components/ReusableTable";
 import TableSearch from "src/components/TableSearch";
-import { role } from "src/lib/data";
 import { prisma } from "src/lib/prisma";
 import { ITEM_PER_PAGE } from "src/lib/settings";
+import { getUtils } from "src/lib/utils";
 
 type SubjectList = Subject & { teachers: Teacher[] };
-const columns = [
-  {
-    header: "Subject Name",
-    accessor: "name",
-  },
-  {
-    header: "Teachers",
-    accessor: "teachers",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Actions",
-    accessor: "action",
-  },
-];
-
-const renderRow = (item: SubjectList) => (
-  <tr
-    key={item.id}
-    className="border-b border-gray-200 text-sm even:bg-slate-50 hover:bg-lamaPurpleLight"
-  >
-    <td className="flex items-center gap-4 p-4 font-semibold">{item.name}</td>
-    <td className="hidden md:table-cell">{item.teachers.map((t) => t.name).join(",")}</td>
-    <td>
-      <div className="flex items-center gap-2">
-        {role === "admin" && (
-          <>
-            <FormModal table="subject" type="update" data={item} />
-            <FormModal table="subject" type="delete" id={item.id} />
-          </>
-        )}
-      </div>
-    </td>
-  </tr>
-);
 
 const SubjectListPage = async ({
   searchParams,
@@ -54,6 +19,44 @@ const SubjectListPage = async ({
   const currentPage = parseInt(page);
 
   const query: Prisma.SubjectWhereInput = {};
+  const role = (await getUtils()).role;
+
+  const columns = [
+    {
+      header: "Subject Name",
+      accessor: "name",
+    },
+    {
+      header: "Teachers",
+      accessor: "teachers",
+      className: "hidden md:table-cell",
+    },
+    {
+      header: "Actions",
+      accessor: "action",
+      className: `${role === "admin"? "" : "hidden"}`,
+    },
+  ];
+  
+  const renderRow = (item: SubjectList) => (
+    <tr
+      key={item.id}
+      className="border-b border-gray-200 text-sm even:bg-slate-50 hover:bg-lamaPurpleLight"
+    >
+      <td className="flex items-center gap-4 p-4 font-semibold">{item.name}</td>
+      <td className="hidden md:table-cell">{item.teachers.map((t) => t.name).join(",")}</td>
+      <td>
+        <div className="flex items-center gap-2">
+          {role === "admin" && (
+            <>
+              <FormModal table="subject" type="update" data={item} />
+              <FormModal table="subject" type="delete" id={item.id} />
+            </>
+          )}
+        </div>
+      </td>
+    </tr>
+  );
 
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {

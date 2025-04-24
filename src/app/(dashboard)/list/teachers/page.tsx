@@ -6,94 +6,13 @@ import FormModal from "src/components/FormModal";
 import Pagination from "src/components/Pagination";
 import ReusableTable from "src/components/ReusableTable";
 import TableSearch from "src/components/TableSearch";
-import { role } from "src/lib/data";
 import { ITEM_PER_PAGE } from "src/lib/settings";
+import { getUtils } from "src/lib/utils";
 
 type TeacherList = Teacher & {
   subjects: Subject[];
   classes: Class[];
 };
-
-const columns = [
-  {
-    header: "Info",
-    accessor: "info",
-  },
-  {
-    header: "Teacher ID",
-    accessor: "teacherId",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Subjects",
-    accessor: "subjects",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Classes",
-    accessor: "classes",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Phone",
-    accessor: "phone",
-    className: "hidden lg:table-cell",
-  },
-  {
-    header: "Address",
-    accessor: "address",
-    className: "hidden lg:table-cell",
-  },
-  {
-    header: "Actions",
-    accessor: "action",
-  },
-];
-
-const renderRow = (item: TeacherList) => (
-  <tr
-    key={item.id}
-    className="border-b border-gray-200 text-sm even:bg-slate-50 hover:bg-lamaPurpleLight"
-  >
-    <td className="flex items-center gap-4 p-4">
-      <Image
-        src={item.img || "/noAvatar.png"}
-        alt=""
-        width={40}
-        height={40}
-        className="h-10 w-10 rounded-full object-cover md:hidden xl:block"
-      />
-      <div className="flex flex-col">
-        <h3 className="font-semibold">{item.name}</h3>
-        <p className="text-xs text-gray-500">{item?.email}</p>
-      </div>
-    </td>
-    <td className="hidden md:table-cell">{item.username}</td>
-    <td className="hidden md:table-cell">
-      {item.subjects.map((s) => s.name).join(",")}
-    </td>
-    <td className="hidden md:table-cell">
-      {item.classes.map((s) => s.name).join(",")}
-    </td>
-    <td className="hidden md:table-cell">{item.phone}</td>
-    <td className="hidden flex-1 md:table-cell">{item.address}</td>
-    <td>
-      <div className="flex items-center gap-2">
-        <Link href={`/list/teachers/${item.id}`}>
-          <button className="flex h-8 w-8 items-center justify-center rounded-full bg-lamaSky">
-            <Image src="/view.png" alt="" width={16} height={16} />
-          </button>
-        </Link>
-        {role === "admin" && (
-          // <button className="flex h-8 w-8 items-center justify-center rounded-full bg-lamaPurple">
-          //   <Image src="/delete.png" alt="" width={16} height={16} />
-          // </button>
-          <FormModal table="teacher" type="delete" />
-        )}
-      </div>
-    </td>
-  </tr>
-);
 
 //Only the name "searchParams" would work here
 const TeacherListPage = async ({
@@ -104,9 +23,92 @@ const TeacherListPage = async ({
   const { page = "1", ...queryParams } = searchParams || {};
   const currentPage = parseInt(page);
 
-  // The where parameter is used to filter the results based on certain conditions. So, it's responsible for all kinds of filters, from manual filters to filters from API calls such as a student trying to find all its associated teachers, so the student's specific classID will be first passed to the searchParams and then to the where parameter to filter.
-
   const query: Prisma.TeacherWhereInput = {};
+  const role = (await (getUtils())).role;
+
+  const columns = [
+    {
+      header: "Info",
+      accessor: "info",
+    },
+    {
+      header: "Teacher ID",
+      accessor: "teacherId",
+      className: "hidden md:table-cell",
+    },
+    {
+      header: "Subjects",
+      accessor: "subjects",
+      className: "hidden md:table-cell",
+    },
+    {
+      header: "Classes",
+      accessor: "classes",
+      className: "hidden md:table-cell",
+    },
+    {
+      header: "Phone",
+      accessor: "phone",
+      className: "hidden lg:table-cell",
+    },
+    {
+      header: "Address",
+      accessor: "address",
+      className: "hidden lg:table-cell",
+    },
+    {
+      header: "Actions",
+      accessor: "action",
+      className: `${role === "admin"? "" : "hidden"}`,
+    },
+  ];
+  
+  const renderRow = (item: TeacherList) => (
+    <tr
+      key={item.id}
+      className="border-b border-gray-200 text-sm even:bg-slate-50 hover:bg-lamaPurpleLight"
+    >
+      <td className="flex items-center gap-4 p-4">
+        <Image
+          src={item.img || "/noAvatar.png"}
+          alt=""
+          width={40}
+          height={40}
+          className="h-10 w-10 rounded-full object-cover md:hidden xl:block"
+        />
+        <div className="flex flex-col">
+          <h3 className="font-semibold">{item.name}</h3>
+          <p className="text-xs text-gray-500">{item?.email}</p>
+        </div>
+      </td>
+      <td className="hidden md:table-cell">{item.username}</td>
+      <td className="hidden md:table-cell">
+        {item.subjects.map((s) => s.name).join(",")}
+      </td>
+      <td className="hidden md:table-cell">
+        {item.classes.map((s) => s.name).join(",")}
+      </td>
+      <td className="hidden md:table-cell">{item.phone}</td>
+      <td className="hidden flex-1 md:table-cell">{item.address}</td>
+      <td>
+        <div className="flex items-center gap-2">
+          <Link href={`/list/teachers/${item.id}`}>
+            <button className="flex h-8 w-8 items-center justify-center rounded-full bg-lamaSky">
+              <Image src="/view.png" alt="" width={16} height={16} />
+            </button>
+          </Link>
+          {role === "admin" && (
+            // <button className="flex h-8 w-8 items-center justify-center rounded-full bg-lamaPurple">
+            //   <Image src="/delete.png" alt="" width={16} height={16} />
+            // </button>
+            <FormModal table="teacher" type="delete" />
+          )}
+        </div>
+      </td>
+    </tr>
+  );
+
+  // The where parameter is used to filter the results based on certain conditions. So, it's responsible for all kinds of filters, from manual filters to filters from API calls such as a student trying to find all its associated teachers, so the student's specific classID will be first passed to the searchParams and then to the where parameter to filter.
 
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
