@@ -56,3 +56,12 @@ The current implementation focuses on the administrator's view, offering insight
 ## Running the Development Server
 
 Execute one of the following commands:
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
