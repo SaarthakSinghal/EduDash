@@ -1,5 +1,4 @@
 import { Assignment, Class, Prisma, Subject, Teacher } from "@prisma/client";
-import { log } from "console";
 import Image from "next/image";
 import FormModal from "src/components/FormModal";
 import Pagination from "src/components/Pagination";
@@ -106,10 +105,9 @@ const AssignmentsListPage = async ({
         //   default:
         //     break;
         switch (key) {
-          // Shifted to Role condtions to access assignments based on the userID
-          // case "classId": // student's exams
-          //   query.lesson.classId = parseInt(value);
-          //   break;
+          case "classId": // student's exams
+            query.lesson.classId = parseInt(value);
+            break;
           // case "teacherId": // teacher's exams
           //   query.lesson.teacherId = value ;
           //   break;
