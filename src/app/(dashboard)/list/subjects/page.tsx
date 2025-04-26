@@ -37,7 +37,7 @@ const SubjectListPage = async ({
       className: `${role === "admin"? "" : "hidden"}`,
     },
   ];
-  
+
   const renderRow = (item: SubjectList) => (
     <tr
       key={item.id}
@@ -101,7 +101,7 @@ const SubjectListPage = async ({
             <button className="flex h-8 w-8 items-center justify-center rounded-full bg-lamaYellow">
               <Image src="/sort.png" alt="/" width={14} height={14} />
             </button>
-            <FormModal table="student" type="create" />
+            <FormModal table="subject" type="create" />
           </div>
         </div>
       </div>

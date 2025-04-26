@@ -1,11 +1,16 @@
 import Announcements from "src/components/Announcements";
 import AttendanceChartContainer from "src/components/AttendanceChartContainer";
 import CountChartContainer from "src/components/CountChartContainer";
-import EventCalendar from "src/components/EventCalendar";
+import EventCalendarContainer from "src/components/EventCalendarContainer";
 import FinanceChart from "src/components/FinanceChart";
 import UserCard from "src/components/UserCard";
 
-const AdminPage = () => {
+// We can reach the searchParams from the URL only from the pages not from the individual components
+const AdminPage = ({
+  searchParams,
+}: {
+  searchParams: { [keys: string]: string | undefined };
+}) => {
   return (
     <div className="flex flex-col md:flex-row gap-4 p-4">
       {/* LEFT PART */}
@@ -35,7 +40,7 @@ const AdminPage = () => {
       </div>
       {/* RIGHT PART */}
       <div className="w-full lg:w-1/3 flex flex-col gap-8">
-        <EventCalendar/>
+        <EventCalendarContainer searchParams={searchParams}/>
         <Announcements/>
       </div>
     </div>

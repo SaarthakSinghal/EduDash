@@ -1,8 +1,81 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useState } from "react";
-import TeacherForm from "./forms/TeacherForm";
+
+//since this is a client component, Next.js will not utilize code splitting leading to a large bundle size
+//so we will import the forms dynamically using next/dynamic
+// import TeacherForm from "./forms/TeacherForm";
+// import StudentForm from "./forms/StudentForm";
+
+//using lazy loading to load the forms dynamically otherwise all the forms were being loaded
+const AnnouncementForm = dynamic(() => import("./forms/AnnouncementForm"), {
+  loading: () => <p>Loading...</p>,
+  ssr: false,
+});
+const AssignmentForm = dynamic(() => import("./forms/AssignmentForm"), {
+  loading: () => <p>Loading...</p>,
+  ssr: false,
+});
+const AttendanceForm = dynamic(() => import("./forms/AttendanceForm"), {
+  loading: () => <p>Loading...</p>,
+  ssr: false,
+});
+const ClassForm = dynamic(() => import("./forms/ClassForm"), {
+  loading: () => <p>Loading...</p>,
+  ssr: false,
+});
+const ExamForm = dynamic(() => import("./forms/ExamForm"), {
+  loading: () => <p>Loading...</p>,
+  ssr: false,
+});
+const EventForm = dynamic(() => import("./forms/EventForm"), {
+  loading: () => <p>Loading...</p>,
+  ssr: false,
+});
+const LessonForm = dynamic(() => import("./forms/LessonForm"), {
+  loading: () => <p>Loading...</p>,
+  ssr: false,
+});
+const ParentForm = dynamic(() => import("./forms/ParentForm"), {
+  loading: () => <p>Loading...</p>,
+  ssr: false,
+});
+const ResultForm = dynamic(() => import("./forms/ResultForm"), {
+  loading: () => <p>Loading...</p>,
+  ssr: false,
+});
+const StudentForm = dynamic(() => import("./forms/StudentForm"), {
+  loading: () => <p>Loading...</p>,
+  ssr: false,
+});
+const SubjectForm = dynamic(() => import("./forms/SubjectForm"), {
+  loading: () => <p>Loading...</p>,
+  ssr: false,
+});
+const TeacherForm = dynamic(() => import("./forms/TeacherForm"), {
+  loading: () => <p>Loading...</p>,
+  ssr: false,
+});
+
+const forms: {
+  [key: string] : (type: "create" | "update", data?: any) => JSX.Element
+} = {
+  teacher: (type, data) => <TeacherForm type={type} data={data} />,
+  student: (type, data) => <StudentForm type={type} data={data} />,
+  exam: (type, data) => <ExamForm type={type} data={data} />,
+  event: (type, data) => <EventForm type={type} data={data} />,
+  class: (type, data) => <ClassForm type={type} data={data} />,
+  parent: (type, data) => <ParentForm type={type} data={data} />,
+  lesson: (type, data) => <LessonForm type={type} data={data} />,
+  result: (type, data) => <ResultForm type={type} data={data} />,
+  subject: (type, data) => <SubjectForm type={type} data={data} />,
+  attendance: (type, data) => <AttendanceForm type={type} data={data} />,
+  assignment: (type, data) => <AssignmentForm type={type} data={data} />,
+  announcement: (type, data) => <AnnouncementForm type={type} data={data} />,
+
+};
 
 const FormModal = ({
   table,
@@ -43,11 +116,11 @@ const FormModal = ({
         <span className="text-center font-medium">All data will be lost. Are you sure?</span>
         <button className="bg-red-700 text-white px-4 py-2 rounded-md w-min self-center">Delete</button>
       </form>
-    ) : (
+    ) : type === "create" || type === "update" ? (
       <div className="h-fit">
-        <TeacherForm type="create" />
+        {forms[table](type, data)}
       </div>
-    );
+    ) : null;
   };
 
   return (

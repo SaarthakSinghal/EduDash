@@ -54,7 +54,7 @@ const StudentListPage = async ({
       className: `${role === "admin" ? "" : "hidden"}`,
     },
   ];
-  
+
   const renderRow = (item: StudentList) => (
     <tr
       key={item.id}

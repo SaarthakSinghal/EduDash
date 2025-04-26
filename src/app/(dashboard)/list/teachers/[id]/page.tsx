@@ -1,10 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import Announcements from "src/components/Announcements";
-import BigCalendar from "src/components/BigCalendar";
+import BigCalendarContainer from "src/components/BigCalendarContainer";
+import FormModal from "src/components/FormModal";
 import Performance from "src/components/Performance";
+import { getUtils } from "src/lib/utils";
 
-const SingleTeacherPage = () => {
+const SingleTeacherPage = async () => {
+  const { userId } = await getUtils();
+
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 xl:flex-row">
       {/* LEFT */}
@@ -25,6 +29,23 @@ const SingleTeacherPage = () => {
             <div className="flex w-2/3 flex-col justify-between gap-4">
               <div className="flex items-center gap-4">
                 <h1 className="text-xl font-semibold">Leonard Snyder</h1>
+                <FormModal
+                  table="teacher"
+                  type="update"
+                  data={{
+                    username: "Leonard Snyder",
+                    email: "leonard.snyder@example.com",
+                    password: "password",
+                    firstname: "Leonard",
+                    lastname: "Snyder",
+                    phone: "+1 234 567",
+                    address: "123 Main St, Anytown, USA",
+                    bloodType: "A+",
+                    birthday: new Date(),
+                    sex: "male",
+                    img: null,
+                  }}
+                />
               </div>
               <p className="text-sm text-gray-500">
                 Lorem ipsum, dolor sit amet consectetur adipisicing elit.
@@ -113,7 +134,7 @@ const SingleTeacherPage = () => {
         <div className="mt-4 flex h-[800px] flex-col rounded-md bg-white p-4">
           <h1 className="text-xl font-semibold">Schedule</h1>
           <div className="flex-1 overflow-hidden">
-            <BigCalendar />
+            <BigCalendarContainer type="teacherId" id={userId!} />
           </div>
         </div>
       </div>

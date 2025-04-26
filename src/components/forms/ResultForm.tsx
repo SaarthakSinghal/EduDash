@@ -47,7 +47,7 @@ const schema = z.object({
 type inputs = z.infer<typeof schema>;
 let renderCount = 0;
 
-const TeacherForm = ({
+const ResultForm = ({
   type,
   data,
 }: {
@@ -102,7 +102,7 @@ const TeacherForm = ({
       >
         {/* TITLE */}
         <h1 className="text-xl font-semibold">
-          {type === "create" ? "Create a new Teacher" : "Update Teacher"}
+          {type === "create" ? "Create a new Result" : "Update Result"}
         </h1>
         <h1>Form({renderCount / 2})</h1>
         {/* AUTHENTICATION */}
@@ -241,4 +241,4 @@ const TeacherForm = ({
   );
 };
 
-export default TeacherForm;
+export default ResultForm;
