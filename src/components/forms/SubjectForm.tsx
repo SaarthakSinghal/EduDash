@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -42,8 +42,9 @@ const SubjectForm = ({
     // mode: "onBlur",
     resolver: zodResolver(subjectSchema),
   });
-  const { errors, isDirty, isValid, isSubmitting, isSubmitSuccessful } = formState;
-  const watchedValues = watch();
+  const { errors, isDirty, isValid, isSubmitting, isSubmitSuccessful } =
+    formState;
+  // const watchedValues = watch();
 
   const initialState = {
     success: false,
@@ -59,7 +60,6 @@ const SubjectForm = ({
   //if the form is not submitted successfully, then the state will be updated to the error state
   //but to use the state inside of our action, we need to pass the state as the first parameter of the createSubject function
   const [state, formAction] = useFormState(createSubject, initialState);
-
 
   //Submitting the form will send the data to the server and save it inside the database using prisma
   //We will use nextjs server actions to do this
@@ -83,7 +83,7 @@ const SubjectForm = ({
 
   useEffect(() => {
     if (isSubmitSuccessful) reset();
-  }, [isSubmitSuccessful]);
+  }, [isSubmitSuccessful, reset]);
 
   return (
     <div>
@@ -109,7 +109,9 @@ const SubjectForm = ({
               error={errors?.name}
             />
           </div>
-          {state.error && <span className="text-red-500">Something went wrong!</span>}
+          {state.error && (
+            <span className="text-red-500">Something went wrong!</span>
+          )}
           <div className="flex flex-col justify-end gap-4 md:flex-row">
             <button
               className="mt-2 w-1/4 rounded-md bg-rose-500 px-4 py-2 font-medium text-white"

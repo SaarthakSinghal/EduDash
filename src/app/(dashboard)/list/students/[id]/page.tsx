@@ -113,7 +113,7 @@ const SingleStudentPage = () => {
         <div className="mt-4 flex h-[800px] flex-col rounded-md bg-white p-4">
           <h1 className="text-xl font-semibold">Schedule</h1>
           <div className="flex-1 overflow-hidden">
-            <BigCalendar />
+            <BigCalendar data={[]} />
           </div>
         </div>
       </div>

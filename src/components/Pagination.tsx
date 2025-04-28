@@ -9,7 +9,7 @@ const Pagination = ({ page, count }: { page: number; count: number }) => {
 
   // Here, we have extracted all the params from the current URL so that we can update the page number when the user clicks on a page number. but not change the other parameters.
   const changePage = (newPage: number) => {
-    console.log("Page:", newPage);
+    // console.log("Page:", newPage);
     const params = new URLSearchParams(window.location.search);
     params.set("page", newPage.toString());
     router.push(`${window.location.pathname}?${params}`);

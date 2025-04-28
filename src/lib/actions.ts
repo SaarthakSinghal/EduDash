@@ -27,7 +27,7 @@ export const createSubject = async (
       error: false,
     };
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return {
       success: false,
       error: true,

@@ -55,7 +55,15 @@ const AnnouncementForm = ({
   data?: any;
 }) => {
   renderCount++;
-  const { register, control, handleSubmit, formState, watch, getValues, reset } = useForm<inputs>({
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState,
+    watch,
+    getValues,
+    reset,
+  } = useForm<inputs>({
     defaultValues: {
       username: data?.username || "",
       email: data?.email || "",
@@ -72,17 +80,23 @@ const AnnouncementForm = ({
     // mode: "onBlur",
     resolver: zodResolver(schema),
   });
-  const { errors, isDirty, isValid, isSubmitting, isSubmitSuccessful } = formState;
+  const { errors, isDirty, isValid, isSubmitting, isSubmitSuccessful } =
+    formState;
 
-  const watchedValues = watch();
+  // const watchedValues = watch();
 
-  const onSubmit = handleSubmit((data: inputs) => console.log("Form submitted"));
+  const onSubmit = handleSubmit((data: inputs) =>
+    console.log("Form submitted"),
+  );
 
   const handleGetValues = () => console.log("Get Values", getValues());
 
-  console.log("Is Dirty? ", isDirty);
+  /*
+/*
+console.log("Is Dirty? ", isDirty);
   console.log("Is Valid? ", isValid);
   console.log("Is Submitting? ", isSubmitting);
+*/
 
   // useEffect(() => {
   //   const subscription = watch((value) => console.log(value));
@@ -91,7 +105,7 @@ const AnnouncementForm = ({
 
   useEffect(() => {
     if (isSubmitSuccessful) reset();
-  }, [isSubmitSuccessful]);
+  }, [isSubmitSuccessful, reset]);
 
   return (
     <div>
@@ -102,7 +116,9 @@ const AnnouncementForm = ({
       >
         {/* TITLE */}
         <h1 className="text-xl font-semibold">
-          {type === "create" ? "Create a new Announcement" : "Update Announcement"}
+          {type === "create"
+            ? "Create a new Announcement"
+            : "Update Announcement"}
         </h1>
         <h1>Form({renderCount / 2})</h1>
         {/* AUTHENTICATION */}
@@ -211,11 +227,11 @@ const AnnouncementForm = ({
               )}
             </div>
           </div>
-          <div className="flex flex-col md:flex-row gap-4 justify-between">
+          <div className="flex flex-col justify-between gap-4 md:flex-row">
             <button
               className="mt-2 w-1/4 rounded-md bg-blue-500 px-4 py-2 font-medium text-white disabled:opacity-50"
               type="submit"
-              disabled = { !isDirty }
+              disabled={!isDirty}
             >
               {type === "create" ? "Create" : "Update"}
             </button>
@@ -236,7 +252,7 @@ const AnnouncementForm = ({
           </div>
         </div>
       </form>
-      <DevTool control={ control } />
+      <DevTool control={control} />
     </div>
   );
 };

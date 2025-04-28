@@ -23,7 +23,7 @@ export default function SignInPage() {
 
   useEffect(() => {
     const role = user?.publicMetadata.role;
-    console.log(user);
+    // console.log(user);
 
     if (role) {
       router.push(`/${role}`);
