@@ -1,4 +1,4 @@
-# School Management Dashboard
+# EduDash 
 
 ## Overview
 

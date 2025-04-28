@@ -52,7 +52,7 @@ export default function SignInPage() {
         >
           <div className="flex items-center gap-2 text-xl font-bold">
             <Image src="/logo.png" alt="" width={24} height={24} />
-            <span>SchooLama</span>
+            <span>EduDash</span>
           </div>
           <h2 className="text-gray-400">Sign in to continue</h2>
 
