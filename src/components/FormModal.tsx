@@ -62,19 +62,18 @@ const TeacherForm = dynamic(() => import("./forms/TeacherForm"), {
 const forms: {
   [key: string] : (type: "create" | "update", data?: any) => JSX.Element
 } = {
-  teacher: (type, data) => <TeacherForm type={type} data={data} />,
-  student: (type, data) => <StudentForm type={type} data={data} />,
-  exam: (type, data) => <ExamForm type={type} data={data} />,
-  event: (type, data) => <EventForm type={type} data={data} />,
-  class: (type, data) => <ClassForm type={type} data={data} />,
-  parent: (type, data) => <ParentForm type={type} data={data} />,
-  lesson: (type, data) => <LessonForm type={type} data={data} />,
-  result: (type, data) => <ResultForm type={type} data={data} />,
-  subject: (type, data) => <SubjectForm type={type} data={data} />,
+  announcement: (type, data) => <AnnouncementForm type={type} data={data} />,
   attendance: (type, data) => <AttendanceForm type={type} data={data} />,
   assignment: (type, data) => <AssignmentForm type={type} data={data} />,
-  announcement: (type, data) => <AnnouncementForm type={type} data={data} />,
-
+  class: (type, data) => <ClassForm type={type} data={data} />,
+  event: (type, data) => <EventForm type={type} data={data} />,
+  exam: (type, data) => <ExamForm type={type} data={data} />,
+  lesson: (type, data) => <LessonForm type={type} data={data} />,
+  parent: (type, data) => <ParentForm type={type} data={data} />,
+  result: (type, data) => <ResultForm type={type} data={data} />,
+  student: (type, data) => <StudentForm type={type} data={data} />,
+  subject: (type, data) => <SubjectForm type={type} data={data} />,
+  teacher: (type, data) => <TeacherForm type={type} data={data} />,
 };
 
 const FormModal = ({
@@ -83,19 +82,7 @@ const FormModal = ({
   data,
   id,
 }: {
-  table:
-    | "teacher"
-    | "student"
-    | "exam"
-    | "event"
-    | "class"
-    | "parent"
-    | "lesson"
-    | "result"
-    | "subject"
-    | "attendance"
-    | "assignment"
-    | "announcement";
+  table: keyof typeof forms;
   type: "create" | "update" | "delete";
   data?: any;
   id?: number | string;
